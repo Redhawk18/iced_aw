@@ -70,7 +70,7 @@ web-time = "1.1.0"
 [dependencies.iced]
 version = "0.14.0-dev"
 git = "https://github.com/iced-rs/iced.git"
-# rev = "beddf49c"
+rev = "beddf49c"
 default-features = false
 features = ["advanced", "wgpu"]
 
