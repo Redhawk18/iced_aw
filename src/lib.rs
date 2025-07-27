@@ -183,4 +183,4 @@ use iced_fonts::generate_icon_functions;
 pub const ICED_AW_FONT_BYTES: &[u8] = include_bytes!("../font.ttf");
 /// Font type to use in text widgets.
 pub const ICED_AW_FONT: Font = Font::with_name("iced_aw");
-generate_icon_functions!("font.ttf", iced_aw_font, ICED_AW_FONT, "basic");
+generate_icon_functions!("font.ttf", iced_aw_font, ICED_AW_FONT);
