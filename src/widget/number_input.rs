@@ -11,11 +11,9 @@ use iced::{
         },
         Clipboard, Layout, Shell, Widget,
     },
-    alignment::{Horizontal, Vertical},
     event, keyboard,
     mouse::{self, Cursor},
     widget::{
-        text::{LineHeight, Wrapping},
         text_input::{self, cursor, Value},
         Column, Container, Row, Text,
     },
@@ -29,16 +27,13 @@ use std::{
     str::FromStr,
 };
 
+use crate::iced_aw_font::{down_open, up_open};
 use crate::style::{self, Status};
 pub use crate::style::{
     number_input::{self, Catalog, Style},
     StyleFn,
 };
 use crate::widget::typed_input::TypedInput;
-use iced_fonts::{
-    required::{icon_to_string, RequiredIcons},
-    REQUIRED_FONT,
-};
 
 /// The default padding
 const DEFAULT_PADDING: Padding = Padding::new(5.0);
@@ -612,17 +607,17 @@ where
     }
 
     #[allow(clippy::too_many_lines, clippy::cognitive_complexity)]
-    fn on_event(
+    fn update(
         &mut self,
         state: &mut Tree,
-        event: Event,
+        event: &Event,
         layout: Layout<'_>,
         cursor: Cursor,
         renderer: &Renderer,
         clipboard: &mut dyn Clipboard,
         shell: &mut Shell<Message>,
         viewport: &Rectangle,
-    ) -> event::Status {
+    ) {
         let mut children = layout.children();
         let content = children.next().expect("fail to get content layout");
         let mut mod_children = children
@@ -639,7 +634,7 @@ where
             .bounds();
 
         if self.disabled() {
-            return event::Status::Ignored;
+            return;
         }
         let can_decrease = self.can_decrease();
         let can_increase = self.can_increase();
@@ -664,9 +659,9 @@ where
 
         // Function to forward the event to the underlying [`TypedInput`]
         let mut forward_to_text = |widget: &mut Self, child, clipboard| {
-            widget.content.on_event(
+            widget.content.update(
                 child,
-                event.clone(),
+                &event.clone(),
                 content,
                 cursor,
                 renderer,
@@ -692,12 +687,12 @@ where
         let status = match &event {
             Event::Keyboard(key) => {
                 if !text_input.is_focused() {
-                    return event::Status::Ignored;
+                    return;
                 }
 
                 match key {
                     keyboard::Event::ModifiersChanged(_) => forward_to_text(self, child, clipboard),
-                    keyboard::Event::KeyReleased { .. } => return event::Status::Ignored,
+                    keyboard::Event::KeyReleased { .. } => return,
                     keyboard::Event::KeyPressed {
                         key,
                         text,
@@ -732,10 +727,10 @@ where
                                     if check_value(&value) {
                                         forward_to_text(self, child, clipboard)
                                     } else {
-                                        return event::Status::Ignored;
+                                        return;
                                     }
                                 } else {
-                                    return event::Status::Ignored;
+                                    return;
                                 }
                             }
                             // Paste
@@ -744,7 +739,7 @@ where
                                 let Some(paste) =
                                     clipboard.read(iced::advanced::clipboard::Kind::Standard)
                                 else {
-                                    return event::Status::Ignored;
+                                    return;
                                 };
                                 // We replace the selection or paste the text at the cursor
                                 match cursor.state(&Value::new(&value)) {
@@ -760,7 +755,7 @@ where
                                 if check_value(&value) {
                                     forward_to_text(self, child, clipboard)
                                 } else {
-                                    return event::Status::Ignored;
+                                    return;
                                 }
                             }
                             // Backspace
@@ -782,14 +777,14 @@ where
                                             let _ = value.remove(idx - 1);
                                         }
                                     }
-                                    cursor::State::Index(_) => return event::Status::Ignored,
+                                    cursor::State::Index(_) => return,
                                 }
 
                                 // We check if it's now a valid number
                                 if check_value(&value) {
                                     forward_to_text(self, child, clipboard)
                                 } else {
-                                    return event::Status::Ignored;
+                                    return;
                                 }
                             }
                             // Delete
@@ -812,14 +807,14 @@ where
                                             let _ = value.remove(idx);
                                         }
                                     }
-                                    cursor::State::Index(_) => return event::Status::Ignored,
+                                    cursor::State::Index(_) => return,
                                 }
 
                                 // We check if it's now a valid number
                                 if check_value(&value) {
                                     forward_to_text(self, child, clipboard)
                                 } else {
-                                    return event::Status::Ignored;
+                                    return;
                                 }
                             }
                             // Arrow Down, decrease by step
@@ -827,16 +822,12 @@ where
                                 if can_decrease && !has_value =>
                             {
                                 self.decrease_value(shell);
-
-                                event::Status::Captured
                             }
                             // Arrow Up, increase by step
                             keyboard::Key::Named(keyboard::key::Named::ArrowUp)
                                 if can_increase && !has_value =>
                             {
                                 self.increase_value(shell);
-
-                                event::Status::Captured
                             }
                             // Movement of the cursor
                             keyboard::Key::Named(
@@ -863,11 +854,11 @@ where
                                     if check_value(&value) {
                                         forward_to_text(self, child, clipboard)
                                     } else {
-                                        return event::Status::Ignored;
+                                        return;
                                     }
                                 }
                                 // If we are not trying to input text
-                                None => return event::Status::Ignored,
+                                None => return,
                             },
                         }
                     }
@@ -886,7 +877,8 @@ where
                         }
                     }
                 }
-                event::Status::Captured
+                // event::Status::Captured
+                ()
             }
             // Clicking on the buttons up or down
             Event::Mouse(mouse::Event::ButtonPressed(mouse::Button::Left))
@@ -899,7 +891,8 @@ where
                     modifiers.increase_pressed = true;
                     self.increase_value(shell);
                 }
-                event::Status::Captured
+                // event::Status::Captured
+                ()
             }
             // Releasing the buttons
             Event::Mouse(mouse::Event::ButtonReleased(mouse::Button::Left))
@@ -910,7 +903,8 @@ where
                 } else {
                     modifiers.increase_pressed = false;
                 }
-                event::Status::Captured
+                // event::Status::Captured
+                ()
             }
             // Any other event are just forwarded
             _ => forward_to_text(self, child, clipboard),
@@ -1075,6 +1069,7 @@ where
                         color: Color::TRANSPARENT,
                     },
                     shadow: Shadow::default(),
+                    snap: false,
                 },
                 decrease_btn_style
                     .button_background
@@ -1083,17 +1078,16 @@ where
         }
 
         renderer.fill_text(
-            iced::advanced::text::Text {
-                content: icon_to_string(RequiredIcons::CaretDownFill),
-                bounds: Size::new(dec_bounds.width, dec_bounds.height),
-                size: icon_size,
-                font: REQUIRED_FONT,
-                horizontal_alignment: Horizontal::Center,
-                vertical_alignment: Vertical::Center,
-                line_height: LineHeight::Relative(1.3),
-                shaping: iced::advanced::text::Shaping::Advanced,
-                wrapping: Wrapping::default(),
-            },
+            // iced::advanced::text::Text {
+            //     content: down_open(),
+            //     bounds: Size::new(dec_bounds.width, dec_bounds.height),
+            //     size: icon_size,
+            //     font: REQUIRED_FONT,
+            //     line_height: LineHeight::Relative(1.3),
+            //     shaping: iced::advanced::text::Shaping::Advanced,
+            //     wrapping: Wrapping::default(),
+            // },
+            down_open(),
             Point::new(dec_bounds.center_x(), dec_bounds.center_y()),
             decrease_btn_style.icon_color,
             dec_bounds,
@@ -1110,6 +1104,7 @@ where
                         color: Color::TRANSPARENT,
                     },
                     shadow: Shadow::default(),
+                    snap: false,
                 },
                 increase_btn_style
                     .button_background
@@ -1118,17 +1113,16 @@ where
         }
 
         renderer.fill_text(
-            iced::advanced::text::Text {
-                content: icon_to_string(RequiredIcons::CaretUpFill),
-                bounds: Size::new(inc_bounds.width, inc_bounds.height),
-                size: icon_size,
-                font: REQUIRED_FONT,
-                horizontal_alignment: Horizontal::Center,
-                vertical_alignment: Vertical::Center,
-                line_height: LineHeight::Relative(1.3),
-                shaping: iced::advanced::text::Shaping::Advanced,
-                wrapping: Wrapping::default(),
-            },
+            // iced::advanced::text::Text {
+            //     content: up_open(),
+            //     bounds: Size::new(inc_bounds.width, inc_bounds.height),
+            //     size: icon_size,
+            //     font: REQUIRED_FONT,
+            //     line_height: LineHeight::Relative(1.3),
+            //     shaping: iced::advanced::text::Shaping::Advanced,
+            //     wrapping: Wrapping::default(),
+            // },
+            up_open(),
             Point::new(inc_bounds.center_x(), inc_bounds.center_y()),
             increase_btn_style.icon_color,
             inc_bounds,
