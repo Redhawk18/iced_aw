@@ -8,7 +8,6 @@
 //! * `context_menu` (Author: wiiznokes <wiiznokes2@gmail.com>)
 //! * `date_picker` (Author: Kaiden42 <gitlab@tinysn.com>)
 //! * `drop_down` (Author: wiiznokes <wiiznokes2@gmail.com>)
-//! * `grid` (Author: Alexander van Saase <avsaase@gmail.com>)
 //! * `menu`
 //! * `number_input` (Author: leang27 <52003343+leang27@users.noreply.github.com>)
 //! * `selection_list` (Author: Héctor Ramón Jiménez <hector0193@gmail.com> and Andrew Wheeler <genusistimelord@gmail.com>)
@@ -102,13 +101,6 @@ mod platform {
     #[doc(no_inline)]
     #[cfg(feature = "date_picker")]
     pub use {crate::widget::date_picker, date_picker::DatePicker};
-
-    #[doc(no_inline)]
-    #[cfg(feature = "grid")]
-    pub use {
-        crate::widget::{grid, grid_row},
-        grid::{Grid, GridRow},
-    };
 
     #[doc(no_inline)]
     #[cfg(feature = "tab_bar")]
