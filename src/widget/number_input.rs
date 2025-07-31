@@ -27,7 +27,7 @@ use std::{
     str::FromStr,
 };
 
-use crate::iced_aw_font::{down_open, up_open};
+use crate::iced_aw_font::advanced_text;
 use crate::style::{self, Status};
 pub use crate::style::{
     number_input::{self, Catalog, Style},
@@ -1112,7 +1112,7 @@ where
             );
         }
 
-        renderer.fill_text(
+        let (content, font, shaping) = renderer.fill_text(
             // iced::advanced::text::Text {
             //     content: up_open(),
             //     bounds: Size::new(inc_bounds.width, inc_bounds.height),
