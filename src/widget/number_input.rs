@@ -20,6 +20,7 @@ use iced::{
     Alignment, Background, Border, Color, Element, Event, Length, Padding, Point, Rectangle,
     Shadow, Size,
 };
+use iced_widget::text::{LineHeight, Wrapping};
 use num_traits::{bounds::Bounded, Num, NumAssignOps};
 use std::{
     fmt::Display,
@@ -27,7 +28,8 @@ use std::{
     str::FromStr,
 };
 
-use crate::iced_aw_font::{down_open, up_open};
+
+use crate::iced_aw_font::advanced_text::{down_open, up_open};
 use crate::style::{self, Status};
 pub use crate::style::{
     number_input::{self, Catalog, Style},
@@ -1077,17 +1079,18 @@ where
             );
         }
 
+        let (content, font, shaping) = down_open();
         renderer.fill_text(
-            // iced::advanced::text::Text {
-            //     content: down_open(),
-            //     bounds: Size::new(dec_bounds.width, dec_bounds.height),
-            //     size: icon_size,
-            //     font: REQUIRED_FONT,
-            //     line_height: LineHeight::Relative(1.3),
-            //     shaping: iced::advanced::text::Shaping::Advanced,
-            //     wrapping: Wrapping::default(),
-            // },
-            down_open(),
+
+            iced::advanced::text::Text {
+                content,
+                bounds: Size::new(dec_bounds.width, dec_bounds.height),
+                size: icon_size,
+                font,
+                line_height: LineHeight::Relative(1.3),
+                shaping,
+                wrapping: Wrapping::default(),
+            },
             Point::new(dec_bounds.center_x(), dec_bounds.center_y()),
             decrease_btn_style.icon_color,
             dec_bounds,
@@ -1112,17 +1115,17 @@ where
             );
         }
 
+        let (content, font, shaping) = up_open();
         renderer.fill_text(
-            // iced::advanced::text::Text {
-            //     content: up_open(),
-            //     bounds: Size::new(inc_bounds.width, inc_bounds.height),
-            //     size: icon_size,
-            //     font: REQUIRED_FONT,
-            //     line_height: LineHeight::Relative(1.3),
-            //     shaping: iced::advanced::text::Shaping::Advanced,
-            //     wrapping: Wrapping::default(),
-            // },
-            up_open(),
+
+            iced::advanced::text::Text {
+                content,
+                bounds: Size::new(inc_bounds.width, inc_bounds.height),
+                size: icon_size,
+                font,
+                line_height: LineHeight::Relative(1.3),
+                shaping,
+                wrapping: Wrapping::default(),
             Point::new(inc_bounds.center_x(), inc_bounds.center_y()),
             increase_btn_style.icon_color,
             inc_bounds,

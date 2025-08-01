@@ -1402,8 +1402,8 @@ dependencies = [
 
 [[package]]
 name = "iced_fonts"
-version = "0.2.0"
-source = "git+https://github.com/Redhawk18/iced_fonts.git?rev=a76f43#a76f438202827be7de455ce8dc45fdf20b79cedc"
+version = "0.3.0-dev"
+source = "git+https://github.com/Redhawk18/iced_fonts.git?rev=31970b2#31970b2526f8b956d11473b1d3d27e46f0d3a6ae"
 dependencies = [
  "iced_core",
  "iced_fonts_macros",
@@ -1412,8 +1412,8 @@ dependencies = [
 
 [[package]]
 name = "iced_fonts_macros"
-version = "0.2.0"
-source = "git+https://github.com/Redhawk18/iced_fonts.git?rev=a76f43#a76f438202827be7de455ce8dc45fdf20b79cedc"
+version = "0.3.0-dev"
+source = "git+https://github.com/Redhawk18/iced_fonts.git?rev=31970b2#31970b2526f8b956d11473b1d3d27e46f0d3a6ae"
 dependencies = [
  "proc-macro2",
  "quote",
