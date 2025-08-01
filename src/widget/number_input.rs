@@ -11,7 +11,8 @@ use iced::{
         },
         Clipboard, Layout, Shell, Widget,
     },
-    event, keyboard,
+    alignment::Vertical,
+    keyboard,
     mouse::{self, Cursor},
     widget::{
         text_input::{self, cursor, Value},
@@ -669,7 +670,7 @@ where
                 clipboard,
                 &mut sub_shell,
                 viewport,
-            )
+            );
         };
 
         // Check if the value that would result from the input is valid and within bound
@@ -685,7 +686,7 @@ where
             }
         };
 
-        let status = match &event {
+        match &event {
             Event::Keyboard(key) => {
                 if !text_input.is_focused() {
                     return;
@@ -713,11 +714,11 @@ where
                         match key.as_ref() {
                             // Enter
                             keyboard::Key::Named(keyboard::key::Named::Enter) => {
-                                forward_to_text(self, child, clipboard)
+                                forward_to_text(self, child, clipboard);
                             }
                             // Copy and selecting all
                             keyboard::Key::Character("c" | "a") if modifiers.command() => {
-                                forward_to_text(self, child, clipboard)
+                                forward_to_text(self, child, clipboard);
                             }
                             // Cut
                             keyboard::Key::Character("x") if modifiers.command() => {
@@ -726,7 +727,7 @@ where
                                     let _ = value.drain(start..end);
                                     // We check that once this part is cut, it's still a number
                                     if check_value(&value) {
-                                        forward_to_text(self, child, clipboard)
+                                        forward_to_text(self, child, clipboard);
                                     } else {
                                         return;
                                     }
@@ -752,9 +753,11 @@ where
                                     }
                                 }
 
+                                shell.capture_event();
+
                                 // We check if it's now a valid number
                                 if check_value(&value) {
-                                    forward_to_text(self, child, clipboard)
+                                    forward_to_text(self, child, clipboard);
                                 } else {
                                     return;
                                 }
@@ -781,9 +784,11 @@ where
                                     cursor::State::Index(_) => return,
                                 }
 
+                                shell.capture_event();
+
                                 // We check if it's now a valid number
                                 if check_value(&value) {
-                                    forward_to_text(self, child, clipboard)
+                                    forward_to_text(self, child, clipboard);
                                 } else {
                                     return;
                                 }
@@ -811,9 +816,11 @@ where
                                     cursor::State::Index(_) => return,
                                 }
 
+                                shell.capture_event();
+
                                 // We check if it's now a valid number
                                 if check_value(&value) {
-                                    forward_to_text(self, child, clipboard)
+                                    forward_to_text(self, child, clipboard);
                                 } else {
                                     return;
                                 }
@@ -822,12 +829,16 @@ where
                             keyboard::Key::Named(keyboard::key::Named::ArrowDown)
                                 if can_decrease && !has_value =>
                             {
+                                shell.capture_event();
+                                shell.request_redraw();
                                 self.decrease_value(shell);
                             }
                             // Arrow Up, increase by step
                             keyboard::Key::Named(keyboard::key::Named::ArrowUp)
                                 if can_increase && !has_value =>
                             {
+                                shell.capture_event();
+                                shell.request_redraw();
                                 self.increase_value(shell);
                             }
                             // Movement of the cursor
@@ -851,9 +862,12 @@ where
                                         }
                                     }
 
+                                    shell.capture_event();
+                                    shell.request_redraw();
+
                                     // We check if it's now a valid number
                                     if check_value(&value) {
-                                        forward_to_text(self, child, clipboard)
+                                        forward_to_text(self, child, clipboard);
                                     } else {
                                         return;
                                     }
@@ -878,8 +892,8 @@ where
                         }
                     }
                 }
-                // event::Status::Captured
-                ()
+                shell.capture_event();
+                shell.request_redraw();
             }
             // Clicking on the buttons up or down
             Event::Mouse(mouse::Event::ButtonPressed(mouse::Button::Left))
@@ -892,8 +906,8 @@ where
                     modifiers.increase_pressed = true;
                     self.increase_value(shell);
                 }
-                // event::Status::Captured
-                ()
+                shell.capture_event();
+                shell.request_redraw();
             }
             // Releasing the buttons
             Event::Mouse(mouse::Event::ButtonReleased(mouse::Button::Left))
@@ -904,17 +918,16 @@ where
                 } else {
                     modifiers.increase_pressed = false;
                 }
-                // event::Status::Captured
-                ()
+                shell.capture_event();
+                shell.request_redraw();
             }
             // Any other event are just forwarded
             _ => forward_to_text(self, child, clipboard),
-        };
+        }
 
         // We forward the shell of the [`TypedInput`] to the application
-        if let Some(redraw) = sub_shell.redraw_request() {
-            shell.request_redraw(redraw);
-        }
+        shell.request_redraw_at(sub_shell.redraw_request());
+
         if sub_shell.is_layout_invalid() {
             shell.invalidate_layout();
         }
@@ -956,7 +969,6 @@ where
                 }
             }
         }
-        status
     }
 
     fn mouse_interaction(
@@ -1088,6 +1100,8 @@ where
                 line_height: LineHeight::Relative(1.3),
                 shaping,
                 wrapping: Wrapping::default(),
+                align_x: Alignment::Center.into(),
+                align_y: Vertical::Center,
             },
             Point::new(dec_bounds.center_x(), dec_bounds.center_y()),
             decrease_btn_style.icon_color,
@@ -1123,6 +1137,8 @@ where
                 line_height: LineHeight::Relative(1.3),
                 shaping,
                 wrapping: Wrapping::default(),
+                align_x: Alignment::Center.into(),
+                align_y: Vertical::Center,
             },
             Point::new(inc_bounds.center_x(), inc_bounds.center_y()),
             increase_btn_style.icon_color,
