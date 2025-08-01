@@ -28,6 +28,7 @@ use std::{
     str::FromStr,
 };
 
+
 use crate::iced_aw_font::advanced_text::{down_open, up_open};
 use crate::style::{self, Status};
 pub use crate::style::{
@@ -1080,6 +1081,7 @@ where
 
         let (content, font, shaping) = down_open();
         renderer.fill_text(
+
             iced::advanced::text::Text {
                 content,
                 bounds: Size::new(dec_bounds.width, dec_bounds.height),
@@ -1115,6 +1117,7 @@ where
 
         let (content, font, shaping) = up_open();
         renderer.fill_text(
+
             iced::advanced::text::Text {
                 content,
                 bounds: Size::new(inc_bounds.width, inc_bounds.height),
@@ -1123,7 +1126,6 @@ where
                 line_height: LineHeight::Relative(1.3),
                 shaping,
                 wrapping: Wrapping::default(),
-            },
             Point::new(inc_bounds.center_x(), inc_bounds.center_y()),
             increase_btn_style.icon_color,
             inc_bounds,

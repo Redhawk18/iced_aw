@@ -22,7 +22,6 @@ badge = []
 card = []
 date_picker = ["chrono"]
 color_picker = ["iced/canvas"]
-grid = ["itertools"]
 glow = []                                                  # TODO
 tab_bar = []
 tabs = ["tab_bar"]
@@ -47,7 +46,6 @@ full = [
     "number_input",
     "date_picker",
     "color_picker",
-    "grid",
     "tab_bar",
     "tabs",
     "time_picker",
@@ -65,7 +63,7 @@ full = [
 ]
 
 [dev-dependencies]
-iced_aw = { path  = "./", features = ["full"] }
+iced_aw = { path  = "./" }
 getrandom = { version = "0.3.1", features = ["wasm_js"] }
 rand = "0.9.0" # For wrap example
 
@@ -104,10 +102,6 @@ required-features = ["color_picker", "iced/async-std"]
 [[example]]
 name = "date_picker"
 required-features = ["date_picker"]
-
-[[example]]
-name = "grid"
-required-features = ["grid"]
 
 [[example]]
 name = "menu"
